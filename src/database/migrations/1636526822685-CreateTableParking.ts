@@ -28,6 +28,15 @@ export class CreateTableParking1636526822685 implements MigrationInterface {
                         default: false,
                     },
                     {
+                        name: "entry_time",
+                        type: "timestamp",
+                    },
+                    {
+                        name: "exit_time",
+                        type: "timestamp",
+                        isNullable: true,
+                    },
+                    {
                         name: "updated_at",
                         type: "timestamp",
                         default: "now()",

@@ -1,8 +1,9 @@
 import { getCustomRepository, Repository } from 'typeorm';
+import { calculateParkingTime } from '../../util/calculateParkingTime';
 import { Parking } from '../Entities/Parking';
 import { ParkingRepository } from '../Repositories/ParkingRepository';
 
-// import AppError from '../../errors/AppError';
+import AppError from '../../errors/AppError';
 
 interface IParkingDTO {
     plate: string;
@@ -26,11 +27,12 @@ class ParkingService {
         });
 
         if (vehicleExistsInParking.length >= 1) {
-            throw new Error('Veículo com mesma placa identificado no estacionamento.');
+            throw new AppError('Veículo com mesma placa identificado no estacionamento.');
         }
 
         const parking = this.parkingRepository.create({
             plate,
+            entry_time: new Date()
         });
 
         await this.parkingRepository.save(parking);
@@ -44,7 +46,7 @@ class ParkingService {
         });
 
         if (!vehicle) {
-            throw new Error('Veículo não encontrado.');
+            throw new AppError('Veículo não encontrado.');
         }
 
         vehicle.paid = true;
@@ -58,16 +60,35 @@ class ParkingService {
         });
 
         if (!vehicle) {
-            throw new Error('Veículo não encontrado.');
+            throw new AppError('Veículo não encontrado.');
         }
 
         if (!vehicle.paid) {
-            throw new Error('Saída liberada somente após o pagamento.');
+            throw new AppError('Saída liberada somente após o pagamento.');
         }
 
         vehicle.left = true;
+        vehicle.exit_time = new Date();
 
         await this.parkingRepository.save(vehicle);
+    }
+
+    async parkingHistoric(plate: string) {
+        const parkingExists = await this.parkingRepository.findOne({
+            where: { plate },
+        });
+
+        if (!parkingExists) {
+            throw new AppError('veículo não identificado!')
+        }
+
+        const parking = await this.parkingRepository.find({
+            where: { plate },
+        });
+
+        let historic = calculateParkingTime(parking);
+
+        return historic;
     }
 }
 

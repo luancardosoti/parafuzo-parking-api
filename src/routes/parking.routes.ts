@@ -9,7 +9,7 @@ const routes = Router();
 
 const parkingController = new ParkingController();
 
-// routes.get('/', parkingController.list);
+routes.get('/:plate', parkingController.parkingHistoric);
 routes.post('/', createValidator, parkingController.create);
 routes.put('/:id/pay', parkingController.parkingPayament);
 routes.put('/:id/out', parkingController.parkingExit);

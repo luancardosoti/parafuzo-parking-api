@@ -39,6 +39,18 @@ class ParkingController {
 
         return response.status(200).send();
     }
+
+    async parkingHistoric(request: Request, response: Response): Promise<Response> {
+        const {
+            plate
+        } = request.params;
+
+        const parkingService = new ParkingService();
+
+        const historic = await parkingService.parkingHistoric(plate);
+
+        return response.status(200).json(historic);
+    }
 }
 
 export { ParkingController };

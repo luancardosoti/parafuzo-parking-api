@@ -12,6 +12,12 @@ class Parking extends BaseEntity {
 
     @Column({ default: false })
     left: boolean;
+
+    @Column()
+    entry_time: Date;
+
+    @Column({ nullable: true })
+    exit_time: Date;
 }
 
 export { Parking };
